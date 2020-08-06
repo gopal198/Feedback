@@ -1,0 +1,105 @@
+<mat-toolbar highlight>
+    <span class="w100">Welcome {{name}}</span>
+</mat-toolbar>
+<mat-tab-group mat-align-tabs="start">
+   
+    <mat-tab label="New Feedback">
+        <mat-card>
+            <mat-card-content>
+                <form [formGroup]="employeeform">
+                    <mat-form-field class="full-width-input">
+                        <mat-label>EmpName</mat-label>
+                        <input matInput placeholder="AAA" formControlName="empName" required>
+                        <mat-error>
+                            Please provide employee name
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="full-width-input">
+                        <mat-label>EmpId</mat-label>
+                        <input matInput placeholder="0010" formControlName="empId" required>
+                        <mat-error>
+                            Please provide employee Id
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="full-width-input">
+                        <mat-label>Project</mat-label>
+                        <mat-select formControlName="project" required>
+                            <mat-option *ngFor="let projet of projects" [value]="projet.id">{{projet.name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br>
+                    <app-star-rating [rating]="rating" (ratingUpdated)="onRatingChanged($event)"></app-star-rating>
+                    <mat-error *ngIf="fillrating">
+                        Please provide rating
+                    </mat-error>
+                    <mat-form-field class="full-width-input">
+                        <mat-label>Comment</mat-label>
+                        <textarea matInput formControlName="comment" required></textarea>
+                        <mat-error>
+                            Please provide comment
+                        </mat-error>
+                    </mat-form-field>
+                    <button mat-raised-button color="primary"  [disabled]="!employeeform.valid" (click)="saveEmployee(employeeform.value,rating)">Submit</button>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </mat-tab>
+    <mat-tab label="Feedback List">
+        <h4 class="txtCenter" *ngIf="dataSource.length == 0">
+            <div highlight>
+                There is no Feedback. Please add one.
+            </div>
+        </h4>
+        <form [formGroup]="projectForm" *ngIf="dataSource.length > 0">
+            <div formArrayName="projectDetails">
+                <table class="table table-bordered">
+                    <caption class="txtCenter">{{editData}}</caption>
+                    <thead>
+                        <tr>
+                            <th *ngFor="let col of displayedColumns">{{col}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let filter of filtersFormArray.controls; let i = index;">
+                            <tr [formGroupName]="i">
+                                <td>
+
+                                    <mat-form-field class="full-width-input">
+                                        <mat-select formControlName="project" required>
+                                            <mat-option *ngFor="let projet of projects" [value]="projet.id">
+                                                {{projet.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                </td>
+                                <td>
+                                    <app-star-rating [rating]="projectForm.value.projectDetails[i].rating"
+                                        (ratingUpdated)="onRatingChanged($event)"></app-star-rating>
+                                </td>
+                                <td>
+
+                                    <mat-form-field class="full-width-input">
+                                        <textarea matInput formControlName="comment" required></textarea>
+                                        <mat-error>
+                                            Please provide comment
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                </td>
+                                <td>
+                                    <button class="mr10" aria-label="edit" (click)="editRowData(projectForm.value.projectDetails[i],i)">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </button>
+                                    <button aria-label="delete" (click)="removeFilterFromFiltersFormArray(i)">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </mat-tab>
+</mat-tab-group>
